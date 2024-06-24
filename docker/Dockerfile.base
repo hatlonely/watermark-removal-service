@@ -1,0 +1,27 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y wget git gcc g++ cmake libfst-dev
+
+RUN mkdir -p ~/miniconda3 && \
+    wget https://repo.anaconda.com/miniconda/Miniconda3-py37_23.1.0-1-Linux-x86_64.sh -O ~/miniconda3/miniconda.sh && \
+    bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3 && \
+    rm -rf ~/miniconda3/minicond
+
+ENV PATH="/root/miniconda3/bin:${PATH}"
+
+RUN pip install tensorflow==1.15.0
+RUN pip install git+https://github.com/JiahuiYu/neuralgym
+RUN pip install Pillow==8.4.0
+RUN apt-get install -y libsm6 libxext6 libxrender-dev libglib2.0-0
+RUN pip install opencv-python-headless==4.2.0.34
+RUN pip install PyYAML
+RUN pip install protobuf==3.20.0
+
+WORKDIR /root
+
+RUN git clone https://github.com/zuruoke/watermark-removal
+
+WORKDIR /root/watermark-removal
+
+RUN sed -i "s/assert image.shape == preprocessed_mask_image/#assert image.shape == preprocessed_mask_image/g" preprocess_image.py
+COPY model model
