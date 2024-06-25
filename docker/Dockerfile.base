@@ -18,10 +18,16 @@ RUN pip install PyYAML
 RUN pip install protobuf==3.20.0
 
 WORKDIR /root
-
 RUN git clone https://github.com/zuruoke/watermark-removal
 
 WORKDIR /root/watermark-removal
-
 RUN sed -i "s/assert image.shape == preprocessed_mask_image/#assert image.shape == preprocessed_mask_image/g" preprocess_image.py
-COPY model model
+
+RUN wget -q https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
+    apt-get install git-lfs
+
+RUN rm -rf model && \
+    git lfs install && \
+    git clone https://huggingface.co/hatlonely/watermark-removal-service model
+
+WORKDIR /root
